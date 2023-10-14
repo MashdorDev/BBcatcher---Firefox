@@ -17,13 +17,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const homeWorkButton = document.getElementById("homework");
+  const userContent = document.getElementById("userContent");
 
   if (!localStorage.getItem("userInfo")) {
     loginBtn.style.display = "block";
     logoutBtn.style.display = "none";
+    userContent.style.display = "none";
     homeWorkButton.style.display = "none";
   } else {
     loginBtn.style.display = "none";
+    userContent.style.display = "block";
     logoutBtn.style.display = "block";
     homeWorkButton.style.display = "block";
   }

@@ -1,17 +1,17 @@
 body{
     overflow: hidden;
-    margin-right: 10%;
-  margin-left: 10%;
-  margin-top: 10%;
-  margin-bottom: 10%;
+    margin: 3%;
 }
 
 
 h1{
     align: center;
 }
-html{
-    scroll-behavior: auto;
+
+html {
+  scroll-behavior: auto;
+  width: auto;
+  height: auto;
 }
 
 hr.rounded {
@@ -34,11 +34,47 @@ img{
 #homework{
     margin-top: 18%;
 }
+
 #main{
     display: flex;
-  justify-content: center;
+    flex-direction: column;
 }
-#user{
-    display: flex;
+
+#user {
+  display: flex;
   flex-direction: row-reverse;
+  justify-content: left;
+}
+
+#user > h1{
+margin: auto;
+}
+
+#logoutBtn{
+  margin-top: 4%;
+}
+
+#userImage{
+  margin-top: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  width: 45%;
+}
+
+.pressArea{
+  flex-direction: column;
+  display: flex;
+}
+
+.pressArea > a{
+margin: 1%;
+}
+
+#kofiframe{
+
+  width: 100% !important;
+  padding: 4px !important;
+  overflow: hidden;
+  scroll-behavior: auto;
+
 }

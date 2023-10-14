@@ -15,8 +15,8 @@
   <body>
     <div id="main">
     <div id="user" >
-      <h1 class="content">logged as, <span id="username">---</span></h1>
-      <img id="userImage" alt="User Image">
+      <h1 id="userContent" class="content"><span id="username" class="tag is-link is-large is-rounded"></span></h1>
+      <img id="userImage">
     </div>
     <button class="button is-info is-outlined" id="homework">
       Get Home Work
@@ -27,26 +27,26 @@
     <!-- <button id="settings">Settings</button> -->
     <section id="homeworkList"></section>
     <!-- Adding login button for Google OAuth -->
-    <button id="loginBtn">Login with Google</button>
+    <button class="button is-info is-outlined is-fullwidth" id="loginBtn">Login with Google</button>
 
-    <button id="logoutBtn">Logout</button>
+    <button class="button is-danger is-outlined is-fullwidth" id="logoutBtn">Logout</button>
 
     <hr class="rounded">
 
-    <p class="buttons">
-      <a class="button" href="https://github.com/MashdorDev/BBcatcher">
+    <div class="pressArea">
+      <a class="button"  href="https://github.com/MashdorDev/BBcatcher">
         <span class="icon">
           <image src="https://github.com/favicon.ico"></image>
         </span>
         <span>GitHub Repo</span>
       </a>
-      <a class="button is-info" href="https://twitter.com/mashdor">
+      <a class="button is-info " href="https://twitter.com/mashdor">
         <span class="icon">
           <image src="https://twitter.com/favicon.ico"></image>
         </span>
         <span>@Mashdor</span>
       </a>
-      <a class="button is-info" href="https://www.linkedin.com/in/dorz/">
+      <a class="button is-info " href="https://www.linkedin.com/in/dorz/">
         <span class="icon is-small">
           <image src="https://www.linkedin.com/favicon.ico"></image>
         </span>
@@ -58,7 +58,7 @@
         </span>
         <span>Donate</span>
       </button>
-    </p>
+    </div>
     <br>
 
   </body>
