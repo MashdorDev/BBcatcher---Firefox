@@ -6,11 +6,9 @@
   "icons": {
     "64": "icons/icon.png"
   },
-  "key":"QkJjYXRjaGVyIEJ5IERvciBaYWlyaQ==",
   "browser_specific_settings": {
     "gecko": {
-      "id": "BBcatcher@mozilla.org",
-      "strict_min_version": "53a1"
+      "id": "bbcatcher@dorzairi.com"
     }
   },
   "background": {
@@ -42,7 +40,13 @@
   "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
   "browser_action": {
     "default_icon": {
-      "64": "icons/icon.png"
+      "128": "icons/iconx128.png",
+      "80": "icons/iconx80.png",
+      "64": "icons/iconx64.png",
+      "40": "icons/iconx40.png",
+      "32": "icons/iconx32.png",
+      "16": "icons/iconx16.png"
+
     },
     "default_title": "BBcatcher",
     "default_popup": "popup/popup.html"
