@@ -3,9 +3,7 @@ window.BLACKBOARD_URL = window.BLACKBOARD_URL || "https://learn.humber.ca/ultra/
 
 // This is the URL of the Blackboard calendar
 if (window.location.href === "https://learn.humber.ca/ultra/calendar") {
-  console.log("You are on the right page");
 }else{
-  console.log("You are not on the right page");
   BLACKBOARD_URL = "https://learn.humber.ca/ultra/calendar";
 }
 
@@ -30,9 +28,11 @@ async function main() {
       storeCurrentHomework(dueDates);  // Always update the stored homework to the latest data
 
       if (newHomeworkItems.length > 0) {
+        //TODO add a notification here that tells the user how many items were added to the calendar
           console.log(newHomeworkItems , "newHomeworkItems");
           browserAPI.runtime.sendMessage({ type: "ADD_TO_CALENDAR", data: newHomeworkItems });
       } else {
+        //TODO add a notification here that tells the user that they are all up to date
           console.log('You are all up to date with the homework');
 
           browserAPI.runtime.sendMessage({ type: "CREATE_NOTIFICATION", message: "You are all up to date with the homework!" });
@@ -46,9 +46,7 @@ async function main() {
 }
 
 function compareHomework(oldHomework, newHomework) {
-  console.log("Comparing homework");
   if (!oldHomework) return newHomework;  // If there's no old homework, all of the new homework is considered new
-console.log(oldHomework , "oldHomework");
   const newItems = newHomework.filter(newItem =>
       !oldHomework.some(oldItem =>
           oldItem.courseCode === newItem.courseCode &&
@@ -62,12 +60,10 @@ console.log(oldHomework , "oldHomework");
 }
 
 function storeCurrentHomework(dueDates) {
-  console.log("Storing current homework");
   localStorage.setItem('currentHomework', JSON.stringify(dueDates));
 }
 
 function getCurrentHomework() {
-  console.log("Getting current homework");
   const storedHomework = localStorage.getItem('currentHomework');
   return storedHomework ? JSON.parse(storedHomework) : null;
 }
@@ -143,7 +139,6 @@ function lockScreen() {
 
   lockScreen.appendChild(lockScreenText);
   document.body.appendChild(lockScreen);
-  console.log(lockScreen);
 }
 
 // Unlock the screen after processing
@@ -161,7 +156,6 @@ async function scrollToBottom() {
 
     function start() {
       startTime = new Date();
-      console.log("startTime");
     }
 
     function end() {
@@ -172,7 +166,6 @@ async function scrollToBottom() {
 
       // get seconds
       var seconds = Math.round(timeDiff);
-      console.log(seconds + " seconds");
       return seconds;
     }
 
@@ -191,7 +184,6 @@ async function scrollToBottom() {
         deadlineContainer.childNodes[1].childNodes[NumScroll - 2].offsetTop;
       deadlineContainer.scrollTop = scrollingElement;
 
-      console.log(end() >= 5, "currentList > previousList");
       if (end() > 5) {
         console.log("%cDone scrolling", "color: green; font-size: 20px");
         clearInterval(scrollWindow);

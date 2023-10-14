@@ -14,7 +14,7 @@ if (isFirefox) {
 }
 
 const REDIRECT_URL = browserAPI.identity.getRedirectURL();
-console.log("REDIRECT_URL", REDIRECT_URL);
+// console.log("REDIRECT_URL", REDIRECT_URL);
 
 const SCOPES = ["openid", "email", "profile", "https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/tasks"];
 
@@ -55,8 +55,6 @@ async function checkResponse(response) {
 }
 
 async function validate(redirectURL) {
-  console.log("Type of someVariable:", typeof redirectURL);
-  console.log("Value of someVariable:", redirectURL);
   const accessToken = extractAccessToken(redirectURL);
   const validationURL = `${VALIDATION_BASE_URL}?access_token=${accessToken}`;
   const response = await fetch(validationURL, { method: "GET" });

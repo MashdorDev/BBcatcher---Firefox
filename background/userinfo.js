@@ -1,5 +1,4 @@
 async function getUserInfo(accessToken) {
-  console.log("Access token inside getUserInfo: ", accessToken);
   const requestURL = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
   const requestHeaders = new Headers();
   requestHeaders.append('Authorization', `Bearer ${accessToken}`);

@@ -1,7 +1,5 @@
 browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Message received in background script:", message);
   if (message.type === "CREATE_NOTIFICATION") {
-    console.log("Creating notification...");
     browserAPI.notifications
       .create({
         type: "basic",
@@ -20,7 +18,6 @@ browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
         .then((userInfo) => {
             // Notify the popup about the login state change
             browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, userInfo: userInfo });
-            console.log("User info found in local storage: ", userInfo);
             // Optionally, you could call notifyUser here if desired:
             // notifyUser(userInfo);
         })
@@ -106,8 +103,6 @@ function notifyUser(user) {
 }
 
 async function handleAddToTasks(message, sendResponse) {
-  console.log("Message received: ", message);
-
   try {
     const tokenObj = await getAccessToken();
     const actualToken = tokenObj.access_token;
@@ -153,8 +148,6 @@ async function createTask(token, title, notes, due) {
     due: due.toISOString().split("T")[0] + "T00:00:00.000Z", // Optional, only date part is used
     status: "needsAction", // Optional, either "needsAction" or "completed"
   };
-
-  // console.log("Task payload:", JSON.stringify(task));  // Debug log to check the payload
 
   const tasklistId = "@default"; // Replace with your task list ID if not using the default list
 
