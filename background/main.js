@@ -12,34 +12,91 @@ browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((error) => {
         console.error("Error creating notification:", error);
       });
-    console.log("Notification should have been created");
-  }
-
-  if (message.type === "ADD_TO_CALENDAR") {
+  }else  if (message.type === "ADD_TO_CALENDAR") {
     handleAddToTasks(message, sendResponse);
-  } else if (message.action === "getAuthToken") {
-    getAccessToken()
-      .then((tokenObj) => {
-        const actualToken = tokenObj.access_token; // Extract the actual token string
-        localStorage.setItem("accessToken", tokenObj); // Save the access token to local storage
-        return actualToken;
-      })
-      .then(getUserInfo)
-      .then(notifyUser)
-      .catch(logError);
-  } else if (message.action === "getUserInfo") {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    console.log("User info found in local storage: ", userInfo);
+  } else if (message.action === "getAuthToken" || message.action === "getUserInfo") {
+    checkOrGetAccessToken()
+        .then(getUserInfo)
+        .then((userInfo) => {
+            // Notify the popup about the login state change
+            browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, userInfo: userInfo });
+            console.log("User info found in local storage: ", userInfo);
+            // Optionally, you could call notifyUser here if desired:
+            // notifyUser(userInfo);
+        })
+        .catch(logError);
+}
 
-    if (userInfo) {
-      sendResponse({ name: userInfo.name, image: userInfo.picture });
-    }
-  } else {
+//    else if (message.action === "getUserInfo") {
+//     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+//     console.log("User info found in local storage: ", userInfo);
+
+//     if (userInfo) {
+//       // sendResponse({ name: userInfo.name, image: userInfo.picture });
+//       browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, userInfo: message.user });
+//     }
+//   }
+//  }
+else if(message.action === "logout") {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userInfo");
+
+    sendResponse({ message: "User logged out" });
+
+    browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: false });
+
+
+  }else {
     console.error("No message type found");
   }
 });
 
+function checkOrGetAccessToken() {
+  // Check if access token already exists in localStorage
+  const tokenObj = localStorage.getItem('accessToken');
+  if (tokenObj) {
+      return Promise.resolve(JSON.parse(tokenObj).access_token);
+  }
+  // If not, fetch a new access token using getAccessToken
+  return getAccessToken()
+      .then((tokenObj) => {
+          const actualToken = tokenObj.access_token; // Extract the actual token string
+          localStorage.setItem("accessToken", JSON.stringify(tokenObj)); // Save the access token to local storage
+          return actualToken;
+      });
+}
+
+function getUserInfo(token) {
+  // Assuming there's an endpoint at 'https://api.example.com/user'
+  // that returns user info when provided with a valid token.
+  const endpoint = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
+
+  return fetch(endpoint, {
+      method: 'GET',
+      headers: {
+          Authorization: `Bearer ${token}`,
+      },
+  })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`Failed to fetch user info: ${response.statusText}`);
+          }
+          return response.json();  // Parse and return the JSON response body
+      })
+      .then(userInfo => {
+          // Save user info to local storage for later use
+          localStorage.setItem('userInfo', JSON.stringify(userInfo));
+          return userInfo;  // Return user info for further processing
+      })
+      .catch(error => {
+          console.error(`Error fetching user info: ${error.message}`);
+          throw error;  // Re-throw error to be caught by outer .catch() handler
+      });
+}
+
+
 function notifyUser(user) {
+  browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, user: user });
   browser.notifications.create({
     type: "basic",
     title: "You have logged in!",
@@ -126,6 +183,9 @@ async function createTask(token, title, notes, due) {
 
   return await response.json();
 }
+
+
+
 
 function logError(error, userInfo = null) {
   const timestamp = new Date().toISOString();
