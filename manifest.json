@@ -1,6 +1,6 @@
 {
   "name": "BBcatcher",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "manifest_version": 2,
   "description": "Brings all you Exams quiz's and homework to your schedule ",
   "icons": {
@@ -8,7 +8,8 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "bbcatcher@dorzairi.com"
+      "id": "dorzairi@BBcatcher.com",
+      "update_url": "https://b-bcatcher-backend.vercel.app/updates/manifest.json"
     }
   },
   "background": {
@@ -34,7 +35,7 @@
       "matches": ["https://learn.humber.ca/ultra/*"],
       "js": ["scripts/content_scripts.js"],
       "css": ["styles/content_script.css"],
-      "run_at": "document_idle"
+      "run_at": "document_end"
     }
   ],
   "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",

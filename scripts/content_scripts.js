@@ -1,3 +1,13 @@
+let browserAPI;
+if (window.navigator.userAgent.includes("Firefox")) {
+    browserAPI = browser;
+} else if (window.chrome) {
+    browserAPI = window.chrome;
+} else {
+    console.error("Unsupported browser");
+}
+console.log("browserAPI", browserAPI);
+// Now use browserAPI...
 
 window.BLACKBOARD_URL = window.BLACKBOARD_URL || "https://learn.humber.ca/ultra/calendar";
 
@@ -71,10 +81,6 @@ function getCurrentHomework() {
 
 
 
-// Navigate to the Blackboard calendar URL
-function navigateToBlackboard() {
-  window.location.href = BLACKBOARD_URL;
-}
 
 // Click the deadline element on the Blackboard calendar
 async function clickDeadline() {
@@ -231,10 +237,17 @@ async function formatInfo() {
   return dueDates;
 }
 
-// Entry point
-main().catch((error) => {
-  logError(error);
+
+browserAPI.runtime.onMessage.addListener((message) => {
+  if (message.action === 'getHomework') {
+      return main()
+          .catch((error) => {
+              logError(error);
+              throw error;
+          });
+  }
 });
+
 
 function logError(error, userInfo = null) {
   const timestamp = new Date().toISOString();

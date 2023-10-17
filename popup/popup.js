@@ -47,7 +47,21 @@ function updateUIOnLoginState(isLoggedIn, userInfo) {
 
 
 function navigateToBlackboard() {
-  browserAPI.tabs.update({ url: "https://learn.humber.ca/ultra/" });
+  browserAPI.tabs.query({ active: true, currentWindow: true })
+  .then((tabs) => {
+      const activeTab = tabs[0];
+      const url = activeTab.url;
+      if (url.includes("https://learn.humber.ca/ultra/")) {
+          // If already on Blackboard, invoke getHomework
+          browserAPI.runtime.sendMessage({ action: 'getHomework', tabId: activeTab.id });
+      } else {
+          // If not on Blackboard, navigate to Blackboard
+          browserAPI.tabs.update(activeTab.id, { url: 'https://learn.humber.ca/ultra/calendar' });
+      }
+  })
+  .catch(error => {
+      console.error('Error querying tabs:', error);
+  });
 }
 
 // Utility Functions

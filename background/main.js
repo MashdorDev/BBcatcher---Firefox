@@ -10,94 +10,121 @@ browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((error) => {
         console.error("Error creating notification:", error);
       });
-  }else  if (message.type === "ADD_TO_CALENDAR") {
+  } else if (message.action === "navigateToBlackboard") {
+        // Get the active tab
+        browserAPI.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          // Check if there's an active tab
+          if (tabs[0]) {
+              browserAPI.tabs.update(tabs[0].id, { url: 'https://learn.humber.ca/ultra/calendar' });
+          } else {
+              console.error('No active tab found');
+          }
+      });
+      return;
+  }else if (message.action === "getHomework") {
+    if (message.action === "getHomework") {
+      const tabId = message.tabId; // Get the tab ID from the message
+      if (typeof tabId !== "undefined") {
+        // Forward the message to the content script
+        browserAPI.tabs
+          .sendMessage(tabId, { action: "getHomework" })
+          .then((response) => {
+            sendResponse(response);
+          })
+          .catch((error) => {
+            console.error("Error sending message to content script:", error);
+          });
+        return true; // Keeps the message channel open for asynchronous response
+      } else {
+        console.error("No tab ID provided.");
+      }
+    }
+  } else if (message.type === "ADD_TO_CALENDAR") {
     handleAddToTasks(message, sendResponse);
-  } else if (message.action === "getAuthToken" || message.action === "getUserInfo") {
+  } else if (
+    message.action === "getAuthToken" ||
+    message.action === "getUserInfo"
+  ) {
     checkOrGetAccessToken()
-        .then(getUserInfo)
-        .then((userInfo) => {
-            // Notify the popup about the login state change
-            browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, userInfo: userInfo });
-            // Optionally, you could call notifyUser here if desired:
-            // notifyUser(userInfo);
-        })
-        .catch(logError);
-}
-
-//    else if (message.action === "getUserInfo") {
-//     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-//     console.log("User info found in local storage: ", userInfo);
-
-//     if (userInfo) {
-//       // sendResponse({ name: userInfo.name, image: userInfo.picture });
-//       browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, userInfo: message.user });
-//     }
-//   }
-//  }
-else if(message.action === "logout") {
+      .then(getUserInfo)
+      .then((userInfo) => {
+        // Notify the popup about the login state change
+        browserAPI.runtime.sendMessage({
+          action: "loginStateChange",
+          isLoggedIn: true,
+          userInfo: userInfo,
+        });
+        // Optionally, you could call notifyUser here if desired:
+        // notifyUser(userInfo);
+      })
+      .catch(logError);
+  } else if (message.action === "logout") {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userInfo");
 
     sendResponse({ message: "User logged out" });
 
-    browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: false });
-
-
-  }else {
+    browserAPI.runtime.sendMessage({
+      action: "loginStateChange",
+      isLoggedIn: false,
+    });
+  } else {
     console.error("No message type found");
   }
 });
 
 function checkOrGetAccessToken() {
   // Check if access token already exists in localStorage
-  const tokenObj = localStorage.getItem('accessToken');
+  const tokenObj = localStorage.getItem("accessToken");
   if (tokenObj) {
-      return Promise.resolve(JSON.parse(tokenObj).access_token);
+    return Promise.resolve(JSON.parse(tokenObj).access_token);
   }
   // If not, fetch a new access token using getAccessToken
-  return getAccessToken()
-      .then((tokenObj) => {
-          const actualToken = tokenObj.access_token; // Extract the actual token string
-          localStorage.setItem("accessToken", JSON.stringify(tokenObj)); // Save the access token to local storage
-          return actualToken;
-      });
+  return getAccessToken().then((tokenObj) => {
+    const actualToken = tokenObj.access_token; // Extract the actual token string
+    localStorage.setItem("accessToken", JSON.stringify(tokenObj)); // Save the access token to local storage
+    return actualToken;
+  });
 }
 
 function getUserInfo(token) {
   // Assuming there's an endpoint at 'https://api.example.com/user'
   // that returns user info when provided with a valid token.
-  const endpoint = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
+  const endpoint = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
 
   return fetch(endpoint, {
-      method: 'GET',
-      headers: {
-          Authorization: `Bearer ${token}`,
-      },
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error(`Failed to fetch user info: ${response.statusText}`);
-          }
-          return response.json();  // Parse and return the JSON response body
-      })
-      .then(userInfo => {
-          // Save user info to local storage for later use
-          localStorage.setItem('userInfo', JSON.stringify(userInfo));
-          return userInfo;  // Return user info for further processing
-      })
-      .catch(error => {
-          console.error(`Error fetching user info: ${error.message}`);
-          throw error;  // Re-throw error to be caught by outer .catch() handler
-      });
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user info: ${response.statusText}`);
+      }
+      return response.json(); // Parse and return the JSON response body
+    })
+    .then((userInfo) => {
+      // Save user info to local storage for later use
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
+      return userInfo; // Return user info for further processing
+    })
+    .catch((error) => {
+      console.error(`Error fetching user info: ${error.message}`);
+      throw error; // Re-throw error to be caught by outer .catch() handler
+    });
 }
 
-
 function notifyUser(user) {
-  browserAPI.runtime.sendMessage({ action: "loginStateChange", isLoggedIn: true, user: user });
-  browser.notifications.create({
+  browserAPI.runtime.sendMessage({
+    action: "loginStateChange",
+    isLoggedIn: true,
+    user: user,
+  });
+  browserAPI.notifications.create({
     type: "basic",
     title: "You have logged in!",
-    iconUrl: browser.runtime.getURL("icons/icon.png"),
+    iconUrl: browserAPI.runtime.getURL("icons/icon.png"),
     message: `Hi ${user.name} you are now connected to your google account`,
   });
 }
@@ -112,8 +139,14 @@ async function handleAddToTasks(message, sendResponse) {
         taskData;
 
       const title = `${courseName} - ${dueName}`;
-      const notes = `Course Code: ${courseCode}, Due: ${dueName}`;
-      const due = dueDate; // Replace with actual due date
+      const notes = `
+      Course Name: ${courseName}
+      Course Code: ${courseCode}
+      Assignment: ${dueName}
+      Due Date: ${dueDate} ${dueTime.join(":")}
+      [Course Link](${courseLink})
+    `;
+      const due = dueDate ;
 
       return createTask(actualToken, title, notes, due);
     });
@@ -147,6 +180,13 @@ async function createTask(token, title, notes, due) {
     notes: notes, // Optional
     due: due.toISOString().split("T")[0] + "T00:00:00.000Z", // Optional, only date part is used
     status: "needsAction", // Optional, either "needsAction" or "completed"
+    links: [
+      {
+        type: "text/html",
+        description: "Course Link",
+        link: notes.match(/\(https:\/\/[^\)]+\)/)[0].slice(1, -1), // Extract URL from markdown link in notes
+      },
+    ],
   };
 
   const tasklistId = "@default"; // Replace with your task list ID if not using the default list
@@ -176,9 +216,6 @@ async function createTask(token, title, notes, due) {
 
   return await response.json();
 }
-
-
-
 
 function logError(error, userInfo = null) {
   const timestamp = new Date().toISOString();
