@@ -1,3 +1,7 @@
+<div align="center">
+<img style="align:center" src="icons/iconx128.png">
+</div>
+
 # BBcatcher: Your Academic Scheduler Browser Extension for Firefox
 
 BBcatcher simplifies the life of students by seamlessly integrating their academic schedule within their browser. Whether it's exams, quizzes, or homework, BBcatcher ensures you're always ahead of your schedule. Initially crafted for Humber College's learning management system, it possesses the flexibility to adapt to other educational platforms with ease.
@@ -22,7 +26,7 @@ Getting BBcatcher up and running on your Firefox browser is a breeze. Just follo
 
 > **Pro Tip**: For packaging the extension for distribution, leverage the `web-ext build` command in place of `web-ext run`. This will conjure a `.zip` file ready for distribution.
 
-## How to Use BBcatcher
+## How to Use BBcatcher <img style="align:center" src="icons/iconx16.png">
 
 Harness the power of BBcatcher in a few easy steps:
 
@@ -91,7 +95,7 @@ For Chrome aficionados, BBcatcher has a sibling! Discover the [BBcatcher Chrome 
 
 ---
 
-###### Crafted with ❤️ by the Dor Zairi
+###### Crafted with ❤️ by the Dor Zairi <img style="align:center" src="icons/iconx16.png">
 
 ---
 
